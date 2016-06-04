@@ -7,8 +7,14 @@ namespace Drupal\hawk_core;
 
 interface ContentParserInterface {
 
+  /**
+   * @return string
+   */
   public function parse();
 
-  public function fixRelativePath($relativePath);
+  /**
+   * @return string[]
+   */
+  public function getAssets();
 
 }

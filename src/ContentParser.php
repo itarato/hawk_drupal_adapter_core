@@ -13,11 +13,8 @@ class ContentParser implements ContentParserInterface {
 
   private $assets = [];
 
-  private $newBasePath;
-
-  public function __construct($body, $newBasePath) {
+  public function __construct($body) {
     $this->bodyParsed = $this->body = $body;
-    $this->newBasePath = $newBasePath;
   }
 
   public function parse() {
@@ -36,7 +33,14 @@ class ContentParser implements ContentParserInterface {
   }
 
   public function fixRelativePath($relativePath) {
-    return preg_replace('#^' . base_path() . '#', $this->newBasePath, $relativePath);
+    return preg_replace('#^' . base_path() . '#', '', $relativePath);
+  }
+
+  /**
+   * @return string
+   */
+  public function getAssets() {
+    return $this->assets;
   }
 
 }

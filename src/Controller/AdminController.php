@@ -56,18 +56,21 @@ class AdminController extends ControllerBase {
   }
 
   public function contentPackage(NodeInterface $node) {
-    $downloadDir = DRUPAL_ROOT . DIRECTORY_SEPARATOR . PublicStream::basePath();
+    $downloadDir = DRUPAL_ROOT . DIRECTORY_SEPARATOR . PublicStream::basePath() . DIRECTORY_SEPARATOR . 'hawk_packages';
     $downloader = new PackageDownloader(new ContentParserFactory(), $downloadDir, (string) $node->id());
 
     $downloader->getMainPage($node->toUrl()->setAbsolute()->toString());
 
-//    $hawkPackagesDir = $downloadDir . DIRECTORY_SEPARATOR . 'hawk_packages';
-//    $packageDir = $hawkPackagesDir . DIRECTORY_SEPARATOR . $node->id();
-//    $zipper = new \ZipArchive();
-//    $isZipCreated = $zipper->open($hawkPackagesDir . DIRECTORY_SEPARATOR . $node->id() . '.zip', \ZipArchive::CREATE);
-//    assert($isZipCreated);
-//    $zipper->addFile($packageDir . DIRECTORY_SEPARATOR . 'index.html', DIRECTORY_SEPARATOR . $node->id() . DIRECTORY_SEPARATOR . 'index.html');
-//    $zipper->close();
+    $zipper = new \ZipArchive();
+    $isZipCreated = $zipper->open($downloadDir . DIRECTORY_SEPARATOR . $node->id() . '.zip', \ZipArchive::CREATE);
+    assert($isZipCreated);
+    
+    foreach ($downloader->getFiles() as $fullPath => $relativePath) {
+      $inZipPath = DIRECTORY_SEPARATOR . $node->id() . DIRECTORY_SEPARATOR . $relativePath;
+      $zipper->addFile($fullPath, $inZipPath);
+    }
+    
+    $zipper->close();
 
     return [
       '#type' => 'markup',
