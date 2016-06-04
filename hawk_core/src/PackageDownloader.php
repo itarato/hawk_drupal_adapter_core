@@ -44,13 +44,13 @@ class PackageDownloader {
     $this->downloadPath = $downloadPath;
   }
   
-  public function getMainPage($url) {
+  public function getMainPage($url, $relativeName) {
     $body = $this->download($url);
 
     $parser = $this->contentParserFactory->get($body, '/' . $this->packageDirectoryName . '/');
     $bodyParsed = $parser->parse();
 
-    $this->save($bodyParsed, '', 'index.html');
+    $this->save($bodyParsed, '', $relativeName);
 
     foreach ($parser->getAssets() as $asset) {
       $webLoc = new WebLocation($asset);
@@ -69,7 +69,7 @@ class PackageDownloader {
     fwrite($file, $content);
     fclose($file);
 
-    $this->files[$downloadFileFullPath] = $fileRelativeFolder . DIRECTORY_SEPARATOR . $fileName;
+    $this->files[$downloadFileFullPath] = $fileRelativeFolder ? $fileRelativeFolder . DIRECTORY_SEPARATOR . $fileName : $fileName;
   }
 
   protected function download($url) {

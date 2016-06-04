@@ -1,0 +1,6 @@
+name: Hawk Connector Example
+type: module
+package: hawk
+core: 8.x
+dependencies:
+  - hawk_core

@@ -1,0 +1,5 @@
+services:
+  hawk_connector_example.hawk_list_field_subscriber:
+    class: Drupal\hawk_connector_example\EventSubscriber\HawkListFieldSubscriber
+    tags:
+      - { name: event_subscriber }
