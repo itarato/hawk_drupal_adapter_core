@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ */
+
+namespace Drupal\hawk_core\Controller;
+
+use Drupal\Core\Archiver\Zip;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
+use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\hawk_core\Factory\ContentParserFactory;
+use Drupal\hawk_core\PackageDownloader;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+
+class AdminController extends ControllerBase {
+
+  public function contentList() {
+    $efq = \Drupal::entityQuery('node');
+    $nodeIDs = $efq->execute();
+
+    $out = [
+      'table' => [
+        '#type' => 'table',
+        '#header' => [t('Title'), t('Package')],
+        '#empty' => t('There is no content.'),
+      ],
+    ];
+
+    foreach ($nodeIDs as $nodeID) {
+      $node = Node::load($nodeID);
+
+      $adminLink = Link::createFromRoute($node->getTitle(), 'hawk.admin.content_admin', ['node' => $nodeID]);
+      $packageLink = Link::createFromRoute('[=]', 'hawk.admin.content_admin.package', ['node' => $nodeID]);
+      $out['table'][$nodeID] = [
+        'title' => [
+          '#type' => 'markup',
+          '#markup' => $adminLink->toString(),
+        ],
+        'package' => [
+          '#type' => 'markup',
+          '#markup' => $packageLink->toString(),
+        ],
+      ];
+    }
+
+    return $out;
+  }
+
+  public function contentAdmin(NodeInterface $node) {
+    return [
+      '#type' => 'markup',
+      '#markup' => ':)' . $node->getTitle(),
+    ];
+  }
+
+  public function contentPackage(NodeInterface $node) {
+    $downloadDir = DRUPAL_ROOT . DIRECTORY_SEPARATOR . PublicStream::basePath();
+    $downloader = new PackageDownloader(new ContentParserFactory(), $downloadDir, (string) $node->id());
+
+    $downloader->getMainPage($node->toUrl()->setAbsolute()->toString());
+
+//    $hawkPackagesDir = $downloadDir . DIRECTORY_SEPARATOR . 'hawk_packages';
+//    $packageDir = $hawkPackagesDir . DIRECTORY_SEPARATOR . $node->id();
+//    $zipper = new \ZipArchive();
+//    $isZipCreated = $zipper->open($hawkPackagesDir . DIRECTORY_SEPARATOR . $node->id() . '.zip', \ZipArchive::CREATE);
+//    assert($isZipCreated);
+//    $zipper->addFile($packageDir . DIRECTORY_SEPARATOR . 'index.html', DIRECTORY_SEPARATOR . $node->id() . DIRECTORY_SEPARATOR . 'index.html');
+//    $zipper->close();
+
+    return [
+      '#type' => 'markup',
+      '#markup' => 'Zip package has been created.',
+    ];
+  }
+
+}

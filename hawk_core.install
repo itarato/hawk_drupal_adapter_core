@@ -1,0 +1,13 @@
+<?php
+
+//function hawk_core_schema() {
+//  $schema = [];
+//
+//  $schema['hawk_core_content'] = [
+//    'description' => 'Hawk core content',
+//    'fields' => [
+//      'nid' => [],
+//      ''
+//    ],
+//  ];
+//}
