@@ -5,7 +5,6 @@
 
 namespace Drupal\hawk_core\Controller;
 
-use Drupal\Core\Archiver\Zip;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\StreamWrapper\PublicStream;

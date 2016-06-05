@@ -27,6 +27,10 @@ class FeedController extends ControllerBase {
         'id' => (int) $node->id(),
         'title' => $node->getTitle(),
         'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $nid . '.zip', ['absolute' => TRUE])->toString(),
+        'pages' => [
+          $nid . '/node_' . $nid . '.html',
+          $nid . '/node_1.html',
+        ],
       ];
     }
 
