@@ -23,15 +23,21 @@ class FeedController extends ControllerBase {
     $nids = \Drupal::entityQuery('node')->execute();
     foreach ($nids as $nid) {
       $node = Node::load($nid);
-      $info['content'][] = [
+
+      $item = [
         'id' => (int) $node->id(),
         'title' => $node->getTitle(),
         'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $nid . '.zip', ['absolute' => TRUE])->toString(),
         'pages' => [
           $nid . '/node_' . $nid . '.html',
-          $nid . '/node_1.html',
         ],
       ];
+
+      foreach ($node->field_content_list->getValue() as $val) {
+        $item['pages'][] = $nid . '/node_' . $val['target_id'] . '.html';
+      }
+
+      $info['content'][] = $item;
     }
 
     return new JsonResponse($info);

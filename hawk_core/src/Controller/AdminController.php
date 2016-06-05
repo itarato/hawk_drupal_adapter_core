@@ -8,6 +8,7 @@ namespace Drupal\hawk_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\hawk_core\ContentListCompiler;
 use Drupal\hawk_core\Factory\ContentParserFactory;
 use Drupal\hawk_core\PackageDownloader;
 use Drupal\node\Entity\Node;
@@ -61,10 +62,9 @@ class AdminController extends ControllerBase {
     $isZipCreated = $zipper->open($downloadDir . DIRECTORY_SEPARATOR . $node->id() . '.zip', \ZipArchive::CREATE);
     assert($isZipCreated);
 
-    $nodeList = [
-      $node,
-      Node::load(1),
-    ];
+    $listCompiler = new ContentListCompiler($node);
+    $listCompiler->discoverRelatedItems();
+    $nodeList = $listCompiler->getList();
 
     foreach ($nodeList as $idx => $subNode) {
       $downloader = new PackageDownloader(new ContentParserFactory(), $downloadDir, (string) $node->id());
