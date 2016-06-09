@@ -29,9 +29,9 @@ class FeedController extends ControllerBase {
       $item = [
         'id' => (int) $node->id(),
         'title' => $node->getTitle(),
-        'content_feed' => Url::fromRoute('hawk.content_feed', ['node' => $node->id()])->toString(),
-        'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $node->id() . '.zip')->toString(),
-        'image' => $imageField->entity ? file_url_transform_relative($imageField->entity->url()) : '',
+        'content_feed' => Url::fromRoute('hawk.content_feed', ['node' => $node->id()])->setAbsolute()->toString(),
+        'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $node->id() . '.zip')->setAbsolute()->toString(),
+        'image' => $imageField->entity ? $imageField->entity->url() : '',
       ];
 
       
@@ -54,7 +54,7 @@ class FeedController extends ControllerBase {
     foreach ($nodeList as $nodeListItem) {
       $info['pages'][] = [
         'zipPath' => $node->id() . '/node_' . $nodeListItem->id() . '.html',
-        'canonicalPath' => $nodeListItem->toUrl()->toString(),
+        'canonicalPath' => $nodeListItem->toUrl()->setAbsolute()->toString(),
       ];
     }
 
