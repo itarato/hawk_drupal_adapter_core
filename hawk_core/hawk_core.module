@@ -1,0 +1,20 @@
+<?php
+/**
+ * @file
+ */
+
+use Drupal\hawk_core\Config;
+
+/**
+ * @return \Drupal\hawk_core\Service\NullPackagingService
+ */
+function hawk_core_packaging() {
+  return Drupal::getContainer()->get(Config::SERVICE_PACKAGING);
+}
+
+/**
+ * @return \Drupal\hawk_core\Factory\ContentParserFactoryInterface
+ */
+function hawk_core_content_parser_factory() {
+  return Drupal::getContainer()->get(Config::SERVICE_CONTENT_PARSER_FACTORY);
+}

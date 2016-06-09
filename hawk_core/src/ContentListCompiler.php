@@ -26,9 +26,12 @@ class ContentListCompiler {
   }
 
   public function discoverRelatedItems() {
-    foreach ($this->node->field_content_list->getValue() as $val) {
-      $listNode = Node::load($val['target_id']);
-      $this->list[] = $listNode;
+    $listFields = hawk_core_packaging()->getListField();
+    foreach ($listFields as $listField) {
+      foreach ($this->node->{$listField}->getValue() as $val) {
+        $listNode = Node::load($val['target_id']);
+        $this->list[] = $listNode;
+      }
     }
   }
 

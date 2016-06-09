@@ -1,15 +1,14 @@
-entity.node.hawk_node_panel:
-  path: '/node/{node}/hawk'
+hawk.content_list_feed:
+  path: '/hawk/content'
   defaults:
-    _controller: '\Drupal\hawk_core\Controller\NodePanelController::get'
-    _title: 'Hawk Panel'
+    _controller: '\Drupal\hawk_core\Controller\FeedController::contentListFeed'
   requirements:
     _access: 'TRUE'
 
 hawk.content_feed:
-  path: '/hawk/content'
+  path: '/hawk/content/{node}'
   defaults:
-    _controller: '\Drupal\hawk_core\Controller\FeedController::get'
+    _controller: '\Drupal\hawk_core\Controller\FeedController::contentFeed'
   requirements:
     _access: 'TRUE'
 
@@ -18,14 +17,6 @@ hawk.admin.content_list:
   defaults:
     _controller: '\Drupal\hawk_core\Controller\AdminController::contentList'
     _title: 'Content list | Hawk'
-  requirements:
-    _permission: 'hawk administer'
-
-hawk.admin.content_admin:
-  path: '/admin/hawk/content_list/{node}'
-  defaults:
-    _title: 'Admin content | Hawk'
-    _controller: '\Drupal\hawk_core\Controller\AdminController::contentAdmin'
   requirements:
     _permission: 'hawk administer'
 

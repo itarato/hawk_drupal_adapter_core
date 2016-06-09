@@ -11,32 +11,26 @@ use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\hawk_core\ContentListCompiler;
 use Drupal\hawk_core\Factory\ContentParserFactory;
 use Drupal\hawk_core\PackageDownloader;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 class AdminController extends ControllerBase {
 
   public function contentList() {
-    $efq = \Drupal::entityQuery('node');
-    $nodeIDs = $efq->execute();
-
     $out = [
       'table' => [
         '#type' => 'table',
-        '#header' => [t('Title'), t('Package')],
+        '#header' => [t('Title'), NULL],
         '#empty' => t('There is no content.'),
       ],
     ];
 
-    foreach ($nodeIDs as $nodeID) {
-      $node = Node::load($nodeID);
-
-      $adminLink = Link::createFromRoute($node->getTitle(), 'hawk.admin.content_admin', ['node' => $nodeID]);
-      $packageLink = Link::createFromRoute('[=]', 'hawk.admin.content_admin.package', ['node' => $nodeID]);
-      $out['table'][$nodeID] = [
+    $nodes = hawk_core_packaging()->getAvailableContentList();
+    foreach ($nodes as $node) {
+      $packageLink = Link::createFromRoute(t('package'), 'hawk.admin.content_admin.package', ['node' => $node->id()]);
+      $out['table'][$node->id()] = [
         'title' => [
           '#type' => 'markup',
-          '#markup' => $adminLink->toString(),
+          '#markup' => $node->getTitle(),
         ],
         'package' => [
           '#type' => 'markup',
@@ -46,13 +40,6 @@ class AdminController extends ControllerBase {
     }
 
     return $out;
-  }
-
-  public function contentAdmin(NodeInterface $node) {
-    return [
-      '#type' => 'markup',
-      '#markup' => ':)' . $node->getTitle(),
-    ];
   }
 
   public function contentPackage(NodeInterface $node) {
@@ -68,7 +55,7 @@ class AdminController extends ControllerBase {
 
     foreach ($nodeList as $idx => $subNode) {
       $downloader = new PackageDownloader(new ContentParserFactory(), $downloadDir, (string) $node->id());
-      $downloader->getMainPage($subNode->toUrl()->setAbsolute()->toString(), "node_{$subNode->id()}.html");
+      $downloader->getPage($subNode->toUrl()->setAbsolute()->toString(), "node_{$subNode->id()}.html");
 
       foreach ($downloader->getFiles() as $fullPath => $relativePath) {
         $inZipPath = DIRECTORY_SEPARATOR . $node->id() . DIRECTORY_SEPARATOR . $relativePath;

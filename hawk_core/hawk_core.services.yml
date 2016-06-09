@@ -1,0 +1,6 @@
+services:
+  hawk_core.content_parser_factory:
+    class: Drupal\hawk_core\Factory\ContentParserFactory
+
+  hawk_core.packaging:
+    class: Drupal\hawk_core\Service\NullPackagingService

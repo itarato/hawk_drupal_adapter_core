@@ -8,36 +8,54 @@ namespace Drupal\hawk_core\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class FeedController extends ControllerBase {
 
-  public function get() {
+  const API_VERSION = '0.1';
+
+  public function contentListFeed() {
     $info = [
-      'version' => '0.1',
+      'version' => self::API_VERSION,
       'content' => [
       ],
     ];
 
-    $nids = \Drupal::entityQuery('node')->execute();
-    foreach ($nids as $nid) {
-      $node = Node::load($nid);
+    $nodes = hawk_core_packaging()->getAvailableContentList();
+    foreach ($nodes as $node) {
+      $imageField = hawk_core_packaging()->getRepresentativeImage($node);
 
       $item = [
         'id' => (int) $node->id(),
         'title' => $node->getTitle(),
-        'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $nid . '.zip', ['absolute' => TRUE])->toString(),
-        'pages' => [
-          $nid . '/node_' . $nid . '.html',
-        ],
+        'content_feed' => Url::fromRoute('hawk.content_feed', ['node' => $node->id()])->toString(),
+        'package' => Url::fromUri('base:/' . PublicStream::basePath() . '/hawk_packages/' . $node->id() . '.zip')->toString(),
+        'image' => $imageField->entity ? file_url_transform_relative($imageField->entity->url()) : '',
       ];
 
-      foreach ($node->field_content_list->getValue() as $val) {
-        $item['pages'][] = $nid . '/node_' . $val['target_id'] . '.html';
-      }
-
+      
       $info['content'][] = $item;
+    }
+
+    return new JsonResponse($info);
+  }
+
+  public function contentFeed(NodeInterface $node) {
+    $info = [
+      'version' => self::API_VERSION,
+      'pages' => [],
+    ];
+
+    // @TODO Handle synchronization - atm the feed is always up to date but the
+    // package is fixed.
+
+    $nodeList = hawk_core_packaging()->getContentCollection($node);
+    foreach ($nodeList as $nodeListItem) {
+      $info['pages'][] = [
+        'zipPath' => $node->id() . '/node_' . $nodeListItem->id() . '.html',
+        'canonicalPath' => $nodeListItem->toUrl()->toString(),
+      ];
     }
 
     return new JsonResponse($info);

@@ -6,7 +6,6 @@
 namespace Drupal\hawk_core;
 
 use Drupal\Core\Url;
-use Drupal\hawk_core\Controller\ContentParserInterface;
 use Drupal\hawk_core\Factory\ContentParserFactoryInterface;
 use Drupal\hawk_core\Util\WebLocation;
 
@@ -44,7 +43,7 @@ class PackageDownloader {
     $this->downloadPath = $downloadPath;
   }
   
-  public function getMainPage($url, $relativeName) {
+  public function getPage($url, $relativeName) {
     $body = $this->download($url);
 
     $parser = $this->contentParserFactory->get($body, '/' . $this->packageDirectoryName . '/');
