@@ -10,6 +10,7 @@ use Drupal\Core\Link;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\hawk_core\ContentListCompiler;
 use Drupal\hawk_core\Factory\ContentParserFactory;
+use Drupal\hawk_core\Manager\NodePackageManager;
 use Drupal\hawk_core\PackageDownloader;
 use Drupal\node\NodeInterface;
 
@@ -49,10 +50,7 @@ class AdminController extends ControllerBase {
     $isZipCreated = $zipper->open($downloadDir . DIRECTORY_SEPARATOR . $node->id() . '.zip', \ZipArchive::CREATE);
     assert($isZipCreated);
 
-    $listCompiler = new ContentListCompiler($node);
-    $listCompiler->discoverRelatedItems();
-    $nodeList = $listCompiler->getList();
-
+    $nodeList = hawk_core_packaging()->getContentCollection($node);
     foreach ($nodeList as $idx => $subNode) {
       $downloader = new PackageDownloader(new ContentParserFactory(), $downloadDir, (string) $node->id());
       $downloader->getPage($subNode->toUrl()->setAbsolute()->toString(), "node_{$subNode->id()}.html");
@@ -62,6 +60,9 @@ class AdminController extends ControllerBase {
         $zipper->addFile($fullPath, $inZipPath);
       }
     }
+
+    $nodePackageInfo = NodePackageManager::getNodePackageInfo($node);
+    $zipper->addFromString($node->id() . DIRECTORY_SEPARATOR . 'manifest.json', json_encode($nodePackageInfo));
     
     $zipper->close();
 
