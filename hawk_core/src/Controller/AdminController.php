@@ -11,6 +11,7 @@ use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\hawk_core\ContentListCompiler;
 use Drupal\hawk_core\Factory\ContentParserFactory;
 use Drupal\hawk_core\Manager\NodePackageManager;
+use Drupal\hawk_core\Model\PackageInfo;
 use Drupal\hawk_core\PackageDownloader;
 use Drupal\node\NodeInterface;
 
@@ -65,6 +66,11 @@ class AdminController extends ControllerBase {
     $zipper->addFromString($node->id() . DIRECTORY_SEPARATOR . 'manifest.json', json_encode($nodePackageInfo));
     
     $zipper->close();
+
+    // Save package.
+    $packageInfo = PackageInfo::loadByNid($node->id());
+    $packageInfo->setPackageGenerated($_SERVER['REQUEST_TIME']);
+    $packageInfo->save();
 
     return [
       '#type' => 'markup',

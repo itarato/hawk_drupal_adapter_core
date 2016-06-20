@@ -1,13 +1,26 @@
 <?php
 
-//function hawk_core_schema() {
-//  $schema = [];
-//
-//  $schema['hawk_core_content'] = [
-//    'description' => 'Hawk core content',
-//    'fields' => [
-//      'nid' => [],
-//      ''
-//    ],
-//  ];
-//}
+function hawk_core_schema() {
+  $schema = [];
+
+  $schema['hawk_core_package_info'] = [
+    'description' => 'Hawk core content',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Node ID.',
+      ],
+      'package_generated' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp of package generation.'
+      ],
+    ],
+  ];
+
+  return $schema;
+}

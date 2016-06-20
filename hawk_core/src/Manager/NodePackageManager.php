@@ -18,6 +18,7 @@ class NodePackageManager {
     $info = [
       'version' => FeedController::API_VERSION,
       'pages' => [],
+      'generated' => $_SERVER['REQUEST_TIME'],
     ];
 
     $nodeList = hawk_core_packaging()->getContentCollection($node);
@@ -25,6 +26,7 @@ class NodePackageManager {
       $info['pages'][] = [
         'zipPath' => $node->id() . '/node_' . $nodeListItem->id() . '.html',
         'canonicalPath' => $nodeListItem->toUrl()->setAbsolute()->toString(),
+        'title' => $node->getTitle(),
       ];
     }
 
